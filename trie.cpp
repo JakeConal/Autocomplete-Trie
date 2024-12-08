@@ -71,16 +71,52 @@ void suggestWord(Node* curNode, int k, std::vector<std::string>& wordList, std::
     }
 }
 
+bool isLeaf(Node* node) {
+    if (node == nullptr)
+        return false;
 
+    for (int i = 0; i < 26; i++)
+        if (node->child[i] != nullptr)
+            return false;
+    
+    return true;
+}
+
+bool removeWord(Node*& root, std::string word, int index) {
+    if (root == nullptr)
+        return false;
+    
+    if (index == word.size()) {
+        if (root->isLast) 
+            root->isLast = false;
+        return isLeaf(root);
+    }
+    
+    if (removeWord(root->child[word[index] - 'a'], word, index + 1)) {
+        Node* temp = root->child[word[index] - 'a'];
+        root->child[word[index] - 'a'] = nullptr;
+        delete temp;
+        temp = nullptr;
+        return isLeaf(root);
+    }
+    
+    return false;
+}
 
 int main() {
     Node* trie = createTrie("words_alpha.txt");
-    Node* lastPrefixNode = findLastPrefixNode(trie, "a");
+    
+    std::string word = "aa";
+    removeWord(trie, word, 0);
+
+    std::string prefix = "aa";
+    Node* lastPrefixNode = findLastPrefixNode(trie, prefix);
     std::vector<std::string> wordList;
     std::string curWord;
-    suggestWord(lastPrefixNode, 10, wordList, curWord);
+    suggestWord(lastPrefixNode, 5, wordList, curWord);
+
     for (auto i : wordList)
-        std::cout << i << '\n';
+        std::cout << prefix + i << '\n';
 
     return 0;
 }
