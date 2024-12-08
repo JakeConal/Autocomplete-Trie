@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <conio.h>
 
 struct Node {
     bool isLast;
@@ -46,6 +47,9 @@ Node* createTrie(std::string fileName) {
 }
 
 Node* findLastPrefixNode(Node* root, std::string prefix) {
+    if (prefix.empty())
+        return nullptr;
+
     Node* curNode = root;
     
     for (auto i : prefix) {
@@ -103,20 +107,74 @@ bool removeWord(Node*& root, std::string word, int index) {
     return false;
 }
 
-int main() {
+void destroyTrie(Node* root) {
+    if (root == nullptr)
+        return;
+
+    for (int i = 0; i < 26; i++) 
+        if (root->child[i] != nullptr) 
+            destroyTrie(root->child[i]);
+
+    delete root;
+    root = nullptr;
+}
+
+void start() {
     Node* trie = createTrie("words_alpha.txt");
+
+    while (true) {
+        system("cls");
+        std::cout << "[1] Search\n";
+        std::cout << "[2] Insert\n";
+        std::cout << "[3] Delete\n";
+
+        int option = getch();
+
+        if (option == '1') {
+            system("cls");
+            std::cout << "search: ";
+            std::string curWord;
+            char c;
+            std::vector<std::string> wordList;
+            std::string temp;
+            while (true) {
+
+                c = getch();
+                if (c == 8 && !curWord.empty())
+                    curWord.pop_back();
+                else
+                    if (c >= 'a' && c <= 'z')
+                        curWord.push_back(c);
+                else if (c == 27)
+                    break;
+
+                system("cls");
+
+                std::cout << "search: " << curWord << '\n';
+                Node* lastPrefixNode = findLastPrefixNode(trie, curWord);
+                if (lastPrefixNode == nullptr) {
+                    if (!curWord.empty())
+                        std::cout << "not found\n";
+                    continue;
+                }
+
+                suggestWord(lastPrefixNode, 5, wordList, temp);
+
+                for (auto i : wordList) {
+                    std:: cout << curWord + i << '\n';
+                }
+
+                wordList.clear();
+            }
+        }
+        else if (option == '2') {
+            system("cls");
+        }
+    }
+}
+
+int main() {
     
-    std::string word = "aa";
-    removeWord(trie, word, 0);
-
-    std::string prefix = "aa";
-    Node* lastPrefixNode = findLastPrefixNode(trie, prefix);
-    std::vector<std::string> wordList;
-    std::string curWord;
-    suggestWord(lastPrefixNode, 5, wordList, curWord);
-
-    for (auto i : wordList)
-        std::cout << prefix + i << '\n';
-
+    start();
     return 0;
 }
