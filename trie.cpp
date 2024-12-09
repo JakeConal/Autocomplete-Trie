@@ -125,8 +125,8 @@ void start() {
     while (true) {
         system("cls");
         std::cout << "[1] Search\n";
-        std::cout << "[2] Insert\n";
-        std::cout << "[3] Delete\n";
+        std::cout << "[2] Delete\n";
+        std::cout << "[3] Insert\n";
 
         int option = getch();
 
@@ -169,6 +169,29 @@ void start() {
         }
         else if (option == '2') {
             system("cls");
+
+            std::string word;
+            std::cout << "Enter a word to remove: ";
+            std::cin >> word;
+            
+            removeWord(trie, word, 0);
+
+            std::cout << "Removed Successfully. Press any key to continue";
+
+            char x = getch();
+        }
+        else if (option == '3') {
+            system("cls");
+
+            std::string word;
+            std::cout << "Enter a word to insert to dictionary: ";
+            std::cin >> word;
+
+            insert(trie, word);
+
+            std::cout << "Inserted successfully. Press any key to continue";
+
+            char x = getch();
         }
     }
 }
