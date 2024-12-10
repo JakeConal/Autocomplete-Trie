@@ -131,14 +131,25 @@ void start() {
         int option = getch();
 
         if (option == '1') {
+
+            system("cls");
+
+            int k = 0;
+            std::cout << "Enter the number of words you want suggested: ";
+            std::cin >> k;
+
             system("cls");
             std::cout << "search: ";
-            std::string curWord;
+
             char c;
+            std::string curWord;
+            
             std::vector<std::string> suggestList;
             std::string temp;
-            while (true) {
 
+            while (true) {
+                
+                //Enter a word
                 c = getch();
                 if (c == 8 && !curWord.empty())
                     curWord.pop_back();
@@ -151,6 +162,7 @@ void start() {
                 system("cls");
 
                 std::cout << "search: " << curWord << '\n';
+
                 Node* lastPrefixNode = findLastPrefixNode(trie, curWord);
                 if (lastPrefixNode == nullptr) {
                     if (!curWord.empty())
@@ -158,7 +170,7 @@ void start() {
                     continue;
                 }
 
-                suggestWord(lastPrefixNode, 5, suggestList, temp);
+                suggestWord(lastPrefixNode, k, suggestList, temp);
 
                 for (auto i : suggestList) {
                     std:: cout << curWord + i << '\n';

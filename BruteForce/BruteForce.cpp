@@ -18,6 +18,28 @@ std::vector<std::string> createDictionary(std::string fileName) {
     return wordList;
 }
 
+void insertWord(std::vector<std::string>& wordList, std::string word) {
+    if (word.empty())
+        return;
+
+    for (auto i : wordList)
+        if (i == word)
+            return;
+
+    wordList.push_back(word);
+}
+
+void removeWord(std::vector<std::string>& wordList, std::string word) {
+    if (word.empty())
+        return;
+
+    for (int i = 0; i < wordList.size(); i++) {
+        if (wordList[i] == word) {
+            wordList.erase(wordList.begin() + i);
+        }
+    }
+}
+
 std::vector<std::string> suggestWord(std::vector<std::string> wordList, std::string prefix, int k) {
     std::vector<std::string> suggestList;
 
@@ -45,6 +67,12 @@ void start() {
         if (option == '1') {
 
             system("cls");
+
+            int k = 0;
+            std::cout << "Enter the number of words you want suggested: ";
+            std::cin >> k;
+
+            system("cls");
             std::cout << "search: ";
             std::string curWord;
             std::vector<std::string> suggestList;
@@ -65,7 +93,7 @@ void start() {
 
                 std::cout << "search: " << curWord << '\n';
 
-                suggestList = suggestWord(wordList, curWord, 5);
+                suggestList = suggestWord(wordList, curWord, k);
 
                 if (suggestList.size() == 0) {
                     if (!curWord.empty())
@@ -86,7 +114,7 @@ void start() {
             std::string word;
             std::cout << "Enter a word to remove: ";
             std::cin >> word;
-
+            removeWord(wordList, word);
             std::cout << "Removed Successfully. Press any key to continue";
 
             char x = getch();
@@ -97,7 +125,7 @@ void start() {
             std::string word;
             std::cout << "Enter a word to insert to dictionary: ";
             std::cin >> word;
-
+            insertWord(wordList, word);
             std::cout << "Inserted successfully. Press any key to continue";
 
             char x = getch();
