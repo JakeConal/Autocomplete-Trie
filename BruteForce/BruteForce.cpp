@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <conio.h>
+#include <chrono>
 
 std::vector<std::string> createDictionary(std::string fileName) {
     std::fstream dictionary(fileName, std::ios::in);
@@ -93,6 +94,8 @@ void start() {
 
                 std::cout << "search: " << curWord << '\n';
 
+                auto start = std::chrono::high_resolution_clock::now();
+                
                 suggestList = suggestWord(wordList, curWord, k);
 
                 if (suggestList.size() == 0) {
@@ -104,6 +107,12 @@ void start() {
                 for (auto i : suggestList) {
                     std::cout << i << '\n';
                 }
+
+                auto end = std::chrono::high_resolution_clock::now();
+
+                std::chrono::duration<double> runTime = end - start;
+
+                std::cout << "Running Time: " << runTime.count() << '\n';
 
                 suggestList.clear();
             }

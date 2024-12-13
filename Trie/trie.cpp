@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <conio.h>
+#include <chrono>
 
 struct Node {
     bool isLast;
@@ -170,11 +171,17 @@ void start() {
                     continue;
                 }
 
+                auto start = std::chrono::high_resolution_clock::now();
                 suggestWord(lastPrefixNode, k, suggestList, temp);
 
                 for (auto i : suggestList) {
                     std:: cout << curWord + i << '\n';
                 }
+                auto end = std::chrono::high_resolution_clock::now();
+
+                std::chrono::duration<double> runTime = end - start;
+
+                std::cout << "Running Time: " << runTime.count() << '\n';
 
                 suggestList.clear();
             }
@@ -185,7 +192,7 @@ void start() {
             std::string word;
             std::cout << "Enter a word to remove: ";
             std::cin >> word;
-            
+        
             removeWord(trie, word, 0);
 
             std::cout << "Removed Successfully. Press any key to continue";
