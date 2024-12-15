@@ -5,6 +5,7 @@
 #include <conio.h>
 #include <chrono>
 
+//TRIE NODE 
 struct Node {
     bool isLast;
     Node* child[26];
@@ -20,6 +21,7 @@ Node* createNode() {
     return p;
 }
 
+//INSERT A WORD TO TRIE
 void insert(Node*& root, std::string word) {
     
     Node* curNode = root;
@@ -33,6 +35,7 @@ void insert(Node*& root, std::string word) {
     curNode->isLast = true;
 }
 
+//CREATE A TRIE FORM A DICTIONARY
 Node* createTrie(std::string fileName) {
     std::fstream dictionary(fileName, std::ios::in);
 
@@ -47,6 +50,9 @@ Node* createTrie(std::string fileName) {
     return root;
 }
 
+//FIND ALL WORDS CONTAINING A GIVEN PREFIX USING TRIE
+
+//find the node of the last character of the given prefix
 Node* findLastPrefixNode(Node* root, std::string prefix) {
     if (prefix.empty())
         return nullptr;
@@ -62,19 +68,55 @@ Node* findLastPrefixNode(Node* root, std::string prefix) {
     return curNode;
 }
 
-void suggestWord(Node* curNode, int k, std::vector<std::string>& wordList, std::string curWord) {
+//back-tracking to find k word containing the give prefix 
+void suggestWord(Node* curNode, int k, std::vector<std::string>& wordList, std::string prefix, std::string curWord) {
     if (curNode->isLast) {
-        wordList.push_back(curWord);
+        wordList.push_back(prefix + curWord);
     }
 
     for (int i = 0; i < 26; i++) {
         if (curNode->child[i] != nullptr && wordList.size() <= k) {
             curWord.push_back(i + 'a');
-            suggestWord(curNode->child[i], k, wordList, curWord);
+            suggestWord(curNode->child[i], k, wordList, prefix, curWord);
             curWord.pop_back();
         }
     }
 }
+
+std::vector<std::string> autocompleteWord(Node* root, std::string prefix, int k) {
+    std::vector<std::string> suggestWordList;
+
+    Node* lastPrefixNode = findLastPrefixNode(root, prefix);
+
+    if (lastPrefixNode == nullptr) 
+        return suggestWordList;
+    
+    std::string temp;
+    suggestWord(lastPrefixNode, k, suggestWordList, prefix, temp);
+
+    return suggestWordList;
+}
+
+//FIND ALL WORDS CONTAINING A GIVEN PREFIX USING BRUTE-FORCE
+
+std::vector<std::string> autocompleteWord(std::string dictionary, std::string prefix, int k) {
+    std::fstream wordList(dictionary, std::ios::in);
+    std::vector<std::string> suggestWordList;
+    std::string word;
+
+    if (prefix.empty())
+        return suggestWordList;
+
+    while (getline(wordList, word)) {
+        if (!word.empty() && word.find(prefix) == 0 && suggestWordList.size() <= k) {
+            suggestWordList.push_back(word);
+        }
+    }
+
+    return suggestWordList;
+}
+
+//REMOVE A WORD FROM TRIE
 
 bool isLeaf(Node* node) {
     if (node == nullptr)
@@ -88,6 +130,9 @@ bool isLeaf(Node* node) {
 }
 
 bool removeWord(Node*& root, std::string word, int index) {
+    if (word.empty())
+        return false;
+
     if (root == nullptr)
         return false;
     
@@ -108,6 +153,7 @@ bool removeWord(Node*& root, std::string word, int index) {
     return false;
 }
 
+//DELETE TRIE
 void destroyTrie(Node* root) {
     if (root == nullptr)
         return;
@@ -120,18 +166,32 @@ void destroyTrie(Node* root) {
     root = nullptr;
 }
 
+
 void start() {
     Node* trie = createTrie("words_alpha.txt");
 
     while (true) {
+
         system("cls");
         std::cout << "[1] Search\n";
         std::cout << "[2] Delete\n";
         std::cout << "[3] Insert\n";
+        std::cout << "[4] Exit\n";
 
         int option = getch();
 
         if (option == '1') {
+
+            system("cls");
+
+            std::cout << "Choose algorithm\n";
+            std::cout << "[1] Trie\n";
+            std::cout << "[2] Brute-force\n";
+            
+            char algorithm = 0;
+
+            while (algorithm != '1' && algorithm != '2') 
+                algorithm = getch();
 
             system("cls");
 
@@ -142,46 +202,46 @@ void start() {
             system("cls");
             std::cout << "search: ";
 
-            char c;
+            char curChar;
             std::string curWord;
-            
             std::vector<std::string> suggestList;
-            std::string temp;
 
             while (true) {
                 
                 //Enter a word
-                c = getch();
-                if (c == 8 && !curWord.empty())
+                curChar = getch();
+                if (curChar == 8 && !curWord.empty())
                     curWord.pop_back();
                 else
-                    if (c >= 'a' && c <= 'z')
-                        curWord.push_back(c);
-                else if (c == 27)
+                    if (curChar >= 'a' && curChar <= 'z')
+                        curWord.push_back(curChar);
+                else if (curChar == 27)
                     break;
 
                 system("cls");
 
                 std::cout << "search: " << curWord << '\n';
 
-                Node* lastPrefixNode = findLastPrefixNode(trie, curWord);
-                if (lastPrefixNode == nullptr) {
-                    if (!curWord.empty())
-                        std::cout << "not found\n";
-                    continue;
-                }
-
                 auto start = std::chrono::high_resolution_clock::now();
-                suggestWord(lastPrefixNode, k, suggestList, temp);
+
+                if (algorithm ==  '1')
+                    suggestList = autocompleteWord(trie, curWord, k);
+                if (algorithm == '2')
+                    suggestList = autocompleteWord("words_alpha.txt", curWord, k);
+        
+                if (suggestList.empty())
+                    if (!curWord.empty())
+                        std::cout << "Not found\n";
 
                 for (auto i : suggestList) {
-                    std:: cout << curWord + i << '\n';
+                    std:: cout << i << '\n';
                 }
+
                 auto end = std::chrono::high_resolution_clock::now();
 
                 std::chrono::duration<double> runTime = end - start;
 
-                std::cout << "Running Time: " << runTime.count() << '\n';
+                std::cout << "Running Time: " << runTime.count() * 1000 << '\n';
 
                 suggestList.clear();
             }
@@ -212,7 +272,12 @@ void start() {
 
             char x = getch();
         }
+        else if (option == '4') {
+            break;
+        }
     }
+
+    destroyTrie(trie);
 }
 
 int main() {
