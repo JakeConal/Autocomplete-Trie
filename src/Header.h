@@ -27,8 +27,9 @@ struct CompressedTrie {
 void suggestWord(TrieNode* curNode, std::vector<std::string>& curList, std::string prefix, std::string curWord, int num, long long& comparisonCount);
 std::vector<std::string> autocomplete(CompressedTrie Trie, std::string prefix, int num, long long& comparisonCount);
 
-//Brute Force algorithm
-std::vector<std::string> autocomplete(std::string fileName, std::string prefix, int num, long long& comparisonCount);
+//Binary Search algorithm
+std::vector<std::string> sortDictionary(std::string fileName);
+std::vector<std::string> autocomplete(std::vector<std::string> fileName, std::string prefix, int num, long long& comparisonCount);
 
 //Menu
 void displayMenu();

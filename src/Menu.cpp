@@ -78,7 +78,7 @@ void search(CompressedTrie trie) {
     std::cout << "\n\n\n\n\n";
     std::cout << "\t\t\t\t\t   Choose algorithm\n";
     std::cout << "\t\t\t\t\t   [1] Compressed Trie\n";
-    std::cout << "\t\t\t\t\t   [2] Brute Force\n";
+    std::cout << "\t\t\t\t\t   [2] Binary Search\n";
     int algorithm = 0;
     while (true) {
         char c = _getch();
@@ -102,6 +102,7 @@ void search(CompressedTrie trie) {
 
     std::string input = "";
     std::vector<std::string> suggestList;
+    std::vector<std::string> sortedDictionary = sortDictionary("words.txt");
 
     while (true) {
         char c = _getch();
@@ -128,13 +129,11 @@ void search(CompressedTrie trie) {
         if (algorithm == 1)
             suggestList = autocomplete(trie, input, num, comparisonCount);
         else if (algorithm == 2)
-            suggestList = autocomplete("words.txt", input, num, comparisonCount);
+            suggestList = autocomplete(sortedDictionary, input, num, comparisonCount);
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> time = end - start;
 
-        std::cout << "\n\t\t\t\tNumber of comparisons: " << comparisonCount << '\n';
-        std::cout << "\t\t\t\tRunning time: " << time.count() * 1000 << " ms\n";
         std::cout << "\n\t\t\t\tRESULT:\n";
 
         if (suggestList.empty()) {

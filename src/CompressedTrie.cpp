@@ -182,12 +182,12 @@ void suggestWord(TrieNode* curNode, std::vector<std::string>& curList, std::stri
         curList.push_back(prefix + curWord);
     }
 
-    if (++countComparison && curList.size() > num) {
+    if (++countComparison && curList.size() >= num) {
         return;
     }
 
     for(auto child : curNode->child) {
-        if (++countComparison && curList.size() <= num) {
+        if (++countComparison && curList.size() < num) {
             suggestWord(child.second, curList, prefix, curWord + child.second->key, num, countComparison);
         }
     }
