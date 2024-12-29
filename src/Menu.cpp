@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <iomanip>
+#include <chrono>
 
 void displayMenu() {
     CompressedTrie trie;
@@ -15,8 +16,6 @@ void displayMenu() {
         system("cls");
         std::cout << "\n\n";
 
-        // Center the logo
-        int width = 80; // Adjust this value to center the logo as needed
         std::cout << "\t\t" << "\033[31m               ,,                  ,,                                                  \033[0m\n";
         std::cout << "\t\t" << "\033[32m`7MM\"\"\"Yb.     db           mm     db                                                  \033[0m\n";
         std::cout << "\t\t" << "\033[33m  MM    `Yb.                MM                                                         \033[0m\n";
@@ -123,11 +122,19 @@ void search(CompressedTrie trie) {
 
         if (input.empty()) continue;
 
+        long long comparisonCount = 0;
+        
+        auto start = std::chrono::high_resolution_clock::now();
         if (algorithm == 1)
-            suggestList = autocomplete(trie, input, num);
+            suggestList = autocomplete(trie, input, num, comparisonCount);
         else if (algorithm == 2)
-            suggestList = autocomplete("words.txt", input, num);
+            suggestList = autocomplete("words.txt", input, num, comparisonCount);
+        auto end = std::chrono::high_resolution_clock::now();
 
+        std::chrono::duration<double> time = end - start;
+
+        std::cout << "\n\t\t\t\tNumber of comparisons: " << comparisonCount << '\n';
+        std::cout << "\t\t\t\tRunning time: " << time.count() * 1000 << " ms\n";
         std::cout << "\n\t\t\t\tRESULT:\n";
 
         if (suggestList.empty()) {
@@ -139,6 +146,8 @@ void search(CompressedTrie trie) {
             }
         }
 
+        std::cout << "\n\t\t\t\t[Number of comparisons]: " << comparisonCount << '\n';
+        std::cout << "\t\t\t\t[Running time]: " << time.count() * 1000 << " ms\n";
         suggestList.clear();
     }
 }
@@ -148,7 +157,7 @@ void insert(CompressedTrie& trie) {
     
     std::string word;
     std::cout << "\n\n\n\n\n";
-    std::cout << "\t\t\t\tEnter the word you want to remove from the dictionary: ";
+    std::cout << "\t\t\t\tEnter the word you want to add to the dictionary: ";
     getline(std::cin, word);
     trie.insert(word);
     std::cout << "\t\t\t\tAdded successfully!!. Press any key to continue.";
@@ -160,7 +169,7 @@ void remove(CompressedTrie& trie) {
 
     std::string word;
     std::cout << "\n\n\n\n\n";
-    std::cout << "\t\t\t\tEnter the word you want to add to the dictionary: ";
+    std::cout << "\t\t\t\tEnter the word you want to remove from the dictionary: ";
     getline(std::cin, word);
     if (trie.remove(word))
         std::cout << "\t\t\t\tRemoved successfully!!. Press any key to continue.";

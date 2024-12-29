@@ -21,14 +21,14 @@ struct CompressedTrie {
     void insert(std::string& word);
     bool remove(std::string& word);
     void destroy(TrieNode* node);
-    std::pair<TrieNode*, std::string> search(std::string& prefix);
+    std::pair<TrieNode*, std::string> search(std::string& prefix, long long& comparisonCount);
 };
 
-void suggestWord(TrieNode* curNode, std::vector<std::string>& curList, std::string prefix, std::string curWord, int num);
-std::vector<std::string> autocomplete(CompressedTrie Trie, std::string prefix, int num);
+void suggestWord(TrieNode* curNode, std::vector<std::string>& curList, std::string prefix, std::string curWord, int num, long long& comparisonCount);
+std::vector<std::string> autocomplete(CompressedTrie Trie, std::string prefix, int num, long long& comparisonCount);
 
 //Brute Force algorithm
-std::vector<std::string> autocomplete(std::string fileName, std::string prefix, int num);
+std::vector<std::string> autocomplete(std::string fileName, std::string prefix, int num, long long& comparisonCount);
 
 //Menu
 void displayMenu();

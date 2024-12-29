@@ -117,7 +117,14 @@ bool CompressedTrie::remove(std::string& word) {
         TrieNode* node = parentNode->child[edgeChar];
 
         if (node->isEnd || !node->child.empty()) {
-            break; 
+            if (!node->isEnd && node->child.size() == 1) {
+                auto child = node->child.begin();
+                node->key += child->second->key;
+                node->isEnd = child->second->isEnd;
+                node->child = std::move(child->second->child);
+                delete child->second;
+            }
+            break;
         }
 
         parentNode->child.erase(edgeChar);
@@ -141,26 +148,26 @@ void CompressedTrie::destroy(TrieNode* node) {
     node = nullptr;
 }
 
-std::pair<TrieNode*, std::string> CompressedTrie::search(std::string& prefix) {
+std::pair<TrieNode*, std::string> CompressedTrie::search(std::string& prefix, long long& countComparison) {
     TrieNode* curNode = root;
     int i = 0;
 
-    while (i < prefix.length()) {
-        if (curNode->child.find(prefix[i]) == curNode->child.end())
+    while (++countComparison && i < prefix.length()) {
+        if (++countComparison && curNode->child.find(prefix[i]) == curNode->child.end())
             return {nullptr, ""};
 
         TrieNode* childNode = curNode->child[prefix[i]];
         std::string childKey = childNode->key;
         int j = 0;
 
-        while (i < prefix.length() && j < childKey.length() && prefix[i] == childKey[j]) {
+        while (++countComparison && i < prefix.length() && ++countComparison && j < childKey.length() && ++countComparison && prefix[i] == childKey[j]) {
             ++i;
             ++j;
         }
 
-        if (j == childKey.length()) {
+        if (++countComparison && j == childKey.length()) {
             curNode = childNode;
-        } else if (i == prefix.length()) {
+        } else if (++countComparison && i == prefix.length()) {
             return {childNode, childKey.substr(j)};
         } else {
             return {nullptr, ""};
@@ -170,28 +177,28 @@ std::pair<TrieNode*, std::string> CompressedTrie::search(std::string& prefix) {
     return {curNode, ""};
 }
 
-void suggestWord(TrieNode* curNode, std::vector<std::string>& curList, std::string prefix, std::string curWord, int num) {
-    if (curNode->isEnd) {
+void suggestWord(TrieNode* curNode, std::vector<std::string>& curList, std::string prefix, std::string curWord, int num, long long& countComparison) {
+    if (++countComparison && curNode->isEnd) {
         curList.push_back(prefix + curWord);
     }
 
-    if (curList.size() > num) {
+    if (++countComparison && curList.size() > num) {
         return;
     }
 
     for(auto child : curNode->child) {
-        if (curList.size() <= num) {
-            suggestWord(child.second, curList, prefix, curWord + child.second->key, num);
+        if (++countComparison && curList.size() <= num) {
+            suggestWord(child.second, curList, prefix, curWord + child.second->key, num, countComparison);
         }
     }
 }
 
-std::vector<std::string> autocomplete(CompressedTrie trie, std::string prefix, int num) {
-    auto [prefixNode, remainingKey] = trie.search(prefix);
+std::vector<std::string> autocomplete(CompressedTrie trie, std::string prefix, int num, long long& countComparison) {
+    auto [prefixNode, remainingKey] = trie.search(prefix, countComparison);
     std::vector<std::string> suggestList;
 
-    if (prefixNode != nullptr) {
-        suggestWord(prefixNode, suggestList, prefix, remainingKey, num);
+    if (++countComparison && prefixNode != nullptr) {
+        suggestWord(prefixNode, suggestList, prefix, remainingKey, num, countComparison);
     }
 
     return suggestList;

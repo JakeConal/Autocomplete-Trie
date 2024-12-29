@@ -1,7 +1,7 @@
 #include "Header.h"
 #include <fstream>
 
-std::vector<std::string> autocomplete(std::string fileName, std::string prefix, int num) {
+std::vector<std::string> autocomplete(std::string fileName, std::string prefix, int num, long long& comparisonCount) {
     std::fstream dictionary(fileName, std::ios::in);
     std::vector<std::string> suggestList;
     std::string word;
@@ -9,8 +9,8 @@ std::vector<std::string> autocomplete(std::string fileName, std::string prefix, 
     if (prefix.empty())
         return suggestList;
 
-    while (getline(dictionary, word)) {
-        if (!word.empty() && word.find(prefix) == 0 && suggestList.size() <= num) {
+    while (++comparisonCount && getline(dictionary, word) && ++comparisonCount && suggestList.size() <= num) {
+        if (++comparisonCount && !word.empty() && ++comparisonCount && word.find(prefix) == 0 && ++comparisonCount && suggestList.size() <= num) {
             suggestList.push_back(word);
         }
     }
