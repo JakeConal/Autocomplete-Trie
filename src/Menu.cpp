@@ -157,7 +157,7 @@ void insert(CompressedTrie& trie) {
     std::string word;
     std::cout << "\n\n\n\n\n";
     std::cout << "\t\t\t\tEnter the word you want to add to the dictionary: ";
-    getline(std::cin, word);
+    std::cin >> word;
     trie.insert(word);
     std::cout << "\t\t\t\tAdded successfully!!. Press any key to continue.";
     char c = _getch();
@@ -169,7 +169,7 @@ void remove(CompressedTrie& trie) {
     std::string word;
     std::cout << "\n\n\n\n\n";
     std::cout << "\t\t\t\tEnter the word you want to remove from the dictionary: ";
-    getline(std::cin, word);
+    std::cin >> word;
     if (trie.remove(word))
         std::cout << "\t\t\t\tRemoved successfully!!. Press any key to continue.";
     else 

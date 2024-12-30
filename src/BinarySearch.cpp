@@ -34,6 +34,14 @@ std::vector<std::string>::iterator lowerBound(std::vector<std::string>& wordList
     return wordList.begin() + left;
 }
 
+bool isPrefix(std::string word, std::string prefix, long long& comparisonCount) {
+    if (++comparisonCount && prefix.size() > word.size()) return false;
+    for (int i = 0; ++comparisonCount && i < prefix.size(); ++i) {
+        if (++comparisonCount && word[i] != prefix[i]) return false;
+    }
+    return true;
+}
+
 std::vector<std::string> autocomplete(std::vector<std::string> wordList, std::string prefix, int num, long long& comparisonCount) {
     
     std::vector<std::string> suggestList;
@@ -43,7 +51,7 @@ std::vector<std::string> autocomplete(std::vector<std::string> wordList, std::st
 
     auto i = lowerBound(wordList, prefix, comparisonCount);
 
-    while (++comparisonCount && i != wordList.end() && ++comparisonCount && i->find(prefix) == 0 && ++comparisonCount && suggestList.size() < num) {
+    while (++comparisonCount && i != wordList.end() && ++comparisonCount && isPrefix(*i, prefix, comparisonCount) && ++comparisonCount && suggestList.size() < num) {
         suggestList.push_back(*i);
         ++i;
     }
